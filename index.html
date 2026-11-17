@@ -58,6 +58,11 @@ a{color:var(--brand);text-underline-offset:3px}
 .hero .alt a:hover{color:#fff;border-color:#fff}
 .city-box{position:relative;min-height:320px;aspect-ratio:1/.86}
 .city-box canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.play{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 16px);display:block;text-align:center;text-decoration:none;background:rgba(8,20,40,.88);border:1px solid #FFD38A;border-radius:16px;padding:10px 16px;color:#fff}
+.play b{display:block;font-size:15px;font-weight:700}
+.play span{display:block;font-size:12.5px;color:#C9D6EC;margin-top:2px}
+.play:hover{background:#0B1F3A}
+.play:focus-visible{outline:2px solid #2D8CFF;outline-offset:2px}
 
 /* блоки */
 section.blk{padding:60px 0 12px}
@@ -125,7 +130,7 @@ footer a{color:var(--mute)}
 <div class="alt"><a href="https://claude.ai/artifact/VAWziWW5TJHvwd81ZyVzBS" target="_blank" rel="noopener" data-goal="open_app">Посмотреть приложение</a><a href="calculator/" data-goal="open_calc">Рассчитать отдел продаж</a><a href="audit/" data-goal="open_audit">Бесплатный аудит</a></div>
 </div>
 </div>
-<div class="city-box" aria-label="Схема: в центре ваш бизнес, вокруг поиск, исследование, сообщение, встреча и оплата"><canvas id="city"></canvas></div>
+<div class="city-box" aria-label="Схема: в центре ваш бизнес, вокруг поиск, исследование, сообщение, встреча и оплата"><canvas id="city"></canvas><a class="play" href="game/" data-goal="open_game"><b>Сыграть: построй бизнес с ИИ-командой</b><span>Наймите первого агента и дойдите до экзита, 15 минут</span></a></div>
 </div></section>
 
 <section class="blk" id="uslugi"><div class="wrap">
@@ -230,7 +235,7 @@ footer a{color:var(--mute)}
 <script src="lm-city.js"></script>
 <script>
 (function(){
-  var TG='https://t.me/vladlev007',M={"s1": "Здравствуйте! Хочу разобрать воронку за 20 минут. «Продают не сайты и не боты, а система.» Мой бизнес: ", "s2": "Здравствуйте! Хочу запустить спринт на 14 дней. «Робот ищет и пишет, человек проводит встречу.» Мой бизнес: ", "s3": "Здравствуйте! Хочу обсудить отдел продаж под ключ. «Даём на десять, требуем на семь.» Мой бизнес: ", "s4": "Здравствуйте! Нужна разработка или сайт. «Трафик на сайт, который не продаёт, это платная экскурсия по пустому магазину.» Моя задача: ", "s5": "Здравствуйте! Хочу разобрать воронку за 20 минут. «Встреча в календаре лучше, чем лид в таблице.» Мой бизнес: ", "s6": "Здравствуйте! Хочу обсудить задачу. «Решение откладывают, а лиды остывают.» Моя задача: "};
+  var TG='https://t.me/vladlev007',M={"s1": "Здравствуйте! Хочу разобрать воронку за 20 минут. «Продают не сайты и не боты, а система.» (Влад Лев) Мой бизнес: ", "s2": "Здравствуйте! Хочу запустить спринт на 14 дней. «Если вам не стыдно за первую версию продукта, вы запустились слишком поздно.» (Рид Хоффман) Мой бизнес: ", "s3": "Здравствуйте! Хочу обсудить отдел продаж под ключ. «Даём на десять, требуем на семь.» (Влад Лев) Мой бизнес: ", "s4": "Здравствуйте! Нужна разработка или сайт. «Трафик на сайт, который не продаёт, это платная экскурсия по пустому магазину.» (Влад Лев) Моя задача: ", "s5": "Здравствуйте! Хочу разобрать воронку за 20 минут. «Встреча в календаре лучше, чем лид в таблице.» (Влад Лев) Мой бизнес: ", "s6": "Здравствуйте! Хочу обсудить задачу. «Делайте то, что не масштабируется.» (Пол Грэм) Моя задача: "};
   document.querySelectorAll('a[data-tg]').forEach(function(a){var m=M[a.getAttribute('data-tg')];if(m)a.href=TG+'?text='+encodeURIComponent(m)});
   var c=document.getElementById('city');if(c&&window.LMCity)LMCity.mount(c,{anchor:'center',alpha:1,legend:true});
   var s=document.querySelector('.sticky'),h=document.querySelector('.hero .btn');
