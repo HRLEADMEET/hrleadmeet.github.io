@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>Город сделок · LEADMEET</title>
+<meta name="description" content="Игра: постройте бизнес с ИИ-командой. Наймите первого агента, дойдите до инвестора и экзита.">
+<meta property="og:title" content="Город сделок: построй бизнес с ИИ-командой">
+<meta property="og:description" content="Наймите первого ИИ-агента и дойдите до экзита. Игра от LEADMEET.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return}}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=112489964','ym');
+ym(112489964,'init',{ssr:true,webvisor:false,clickmap:true,referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});
+</script>
+<style>
+:root{--navy:#0B1F3A;--navy2:#081428;--ink:#1E1E1E;--blue:#2D8CFF;--blue-ink:#1A6FDB;--green:#22C55E;--gold:#FFD38A;--paper:#fff;--mist:#F4F6F9;--line:rgba(255,255,255,.12);--muted:#A9B6CC;--r:10px;--rl:16px}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--navy2);color:#EEF3FB;font-family:Manrope,"Helvetica Neue",Arial,sans-serif;-webkit-tap-highlight-color:transparent;overflow:hidden;font-variant-numeric:tabular-nums}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+#map{position:fixed;inset:0;width:100%;height:100%;touch-action:none;display:block}
+.hud{position:fixed;left:0;right:0;top:0;padding:calc(10px + env(safe-area-inset-top)) 12px 8px;background:linear-gradient(var(--navy2) 60%,rgba(8,20,40,0));pointer-events:none}
+.hud>*{pointer-events:auto}
+.res{display:flex;gap:6px;flex-wrap:wrap}
+.res div{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:13px;font-weight:700;white-space:nowrap}
+.res span{color:var(--muted);font-weight:600;margin-right:4px}
+.res .pts{border-color:rgba(255,211,138,.5);color:var(--gold);cursor:pointer}
+.lvl{margin-top:8px;font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.lvl b{color:#fff;font-weight:700}
+.bar{height:5px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:5px}
+.bar i{display:block;height:100%;width:0;background:var(--blue);transition:width .3s}
+.layers{display:flex;gap:6px;margin-top:8px;overflow-x:auto;scrollbar-width:none}
+.layers button{flex:none;border:1px solid var(--line);background:rgba(255,255,255,.05);border-radius:999px;padding:5px 11px;font-size:12px;font-weight:600}
+.layers button[aria-pressed=true]{background:var(--blue-ink);border-color:var(--blue-ink);color:#fff}
+.zoom{position:fixed;right:12px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px}
+.zoom button{width:40px;height:40px;border-radius:var(--r);border:1px solid var(--line);background:rgba(8,20,40,.85);font-size:20px;font-weight:700}
+.bottom{position:fixed;left:0;right:0;bottom:0;padding:10px 12px calc(12px + env(safe-area-inset-bottom));display:flex;gap:8px;background:linear-gradient(rgba(8,20,40,0),var(--navy2) 40%)}
+.bottom button{border-radius:var(--rl);border:1px solid var(--line);background:rgba(255,255,255,.07);padding:12px;font-weight:700;font-size:14px}
+.bottom .main{flex:1;background:var(--blue-ink);border-color:var(--blue-ink);color:#fff;font-size:16px;min-height:52px}
+.bottom .main:active{transform:scale(.98)}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:78vh;overflow:auto;background:var(--paper);color:var(--ink);border-radius:var(--rl) var(--rl) 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 32px rgba(0,0,0,.35);transform:translateY(105%);transition:transform .28s ease-out;z-index:5}
+.sheet.open{transform:none}
+.sheet h3{margin:0 0 6px;font-size:19px;letter-spacing:-.02em;color:var(--navy);text-wrap:balance}
+.sheet p{margin:0 0 10px;font-size:15px;line-height:1.5;color:#37404F}
+.sheet .x{position:absolute;right:10px;top:10px;width:36px;height:36px;border:0;background:var(--mist);border-radius:50%;font-size:18px}
+.btn{display:block;width:100%;text-align:center;text-decoration:none;border-radius:var(--r);padding:13px 14px;font-weight:700;font-size:15px;border:1px solid #D5DBE5;background:#fff;color:var(--navy);margin-top:8px}
+.btn.pri{background:var(--blue-ink);border-color:var(--blue-ink);color:#fff}
+.btn[disabled]{color:#5B6575;background:var(--mist);border-color:#D5DBE5}
+.btn.pri[disabled]{color:#5B6575;background:var(--mist);border-color:#D5DBE5}
+.row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #E3E7EE}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;color:var(--navy);font-size:15px}
+.row .t small{color:#5B6575;font-size:13px}
+.row button{flex:none;border-radius:var(--r);border:1px solid var(--blue-ink);background:var(--blue-ink);color:#fff;padding:9px 12px;font-weight:700;font-size:13px;min-width:96px}
+.row button[disabled]{background:#fff;color:#5B6575;border-color:#D5DBE5}
+.chat{background:var(--mist);border-radius:var(--r);padding:10px;margin:8px 0 12px;font-size:14px;line-height:1.45}
+.chat div{max-width:85%;padding:7px 10px;border-radius:12px;margin:4px 0}
+.chat .a{background:#E3EEFF;color:#0C3E80}
+.chat .c{background:#fff;margin-left:auto;border:1px solid #E3E7EE}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.chips button{border:1px solid #D5DBE5;background:#fff;border-radius:999px;padding:8px 12px;font-size:14px;font-weight:600;color:var(--navy)}
+.inp{width:100%;font:inherit;font-size:16px;padding:12px;border:1px solid #D5DBE5;border-radius:var(--r);color:var(--ink)}
+.err{color:#B42318;font-size:13px;min-height:18px;margin-top:4px}
+.note{font-size:12px;color:#5B6575;margin-top:10px;line-height:1.45}
+.q{margin-top:12px;padding-top:10px;border-top:1px solid #E3E7EE;font-size:14px;color:#37404F;font-style:italic}
+.calc{background:#EAF7EF;color:#14532D;border-radius:var(--r);padding:10px 12px;font-size:14px;line-height:1.5;margin:8px 0}
+.pop{position:fixed;pointer-events:none;font-weight:800;font-size:15px;color:var(--gold);text-shadow:0 1px 3px #000;animation:up 1s ease-out forwards;z-index:4}
+@keyframes up{to{transform:translateY(-46px);opacity:0}}
+.toast{position:fixed;left:50%;top:calc(130px + env(safe-area-inset-top));transform:translateX(-50%);background:rgba(8,20,40,.95);border:1px solid rgba(255,211,138,.5);color:#fff;padding:9px 14px;border-radius:var(--r);font-size:14px;font-weight:600;max-width:88vw;text-align:center;opacity:0;transition:opacity .25s;z-index:6;pointer-events:none}
+.toast.on{opacity:1}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media (prefers-reduced-motion:reduce){.sheet,.bar i{transition:none}.pop{animation:none;opacity:0}}
+</style>
+</head>
+<body>
+<h1 class="sr">Город сделок: игра LEADMEET о бизнесе с ИИ-командой</h1>
+<canvas id="map" aria-label="Карта города: нажмите на здание, чтобы открыть его"></canvas>
+<div class="hud">
+  <div class="res">
+    <div><span>₽</span><b id="vMoney">0</b></div>
+    <div><span>Лиды</span><b id="vLeads">0</b></div>
+    <div><span>Встречи</span><b id="vMeet">0</b></div>
+    <div class="pts" id="vPtsBox" role="button" tabindex="0"><span>Баллы</span><b id="vPts">0</b></div>
+  </div>
+  <div class="lvl"><span>Уровень <b id="vLvl">1</b>: <b id="vLvlName"></b></span><span id="vNext"></span></div>
+  <div class="bar"><i id="vBar"></i></div>
+  <div class="layers" role="group" aria-label="Слои карты">
+    <button data-l="all" aria-pressed="true">Все</button><button data-l="find" aria-pressed="false">Поиск</button><button data-l="msg" aria-pressed="false">Сообщения</button><button data-l="meet" aria-pressed="false">Встречи</button><button data-l="money" aria-pressed="false">Деньги</button>
+  </div>
+</div>
+<div class="zoom"><button id="zIn" aria-label="Приблизить">+</button><button id="zOut" aria-label="Отдалить">−</button></div>
+<div class="bottom">
+  <button class="main" id="sell">Найти клиента</button>
+  <button id="openBuild">Команда</button>
+</div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="false"><button class="x" id="sheetX" aria-label="Закрыть">×</button><div id="sheetBody"></div></div>
+<div class="toast" id="toast" role="status"></div>
+<script>
+(function(){
+'use strict';
+/* ===== Настройки: правьте здесь ===== */
+var CONFIG={
+  tg:'https://t.me/vladlev007',
+  gameUrl:'https://hrleadmeet.github.io/game/',
+  // Механики, которые можно выключить: 'questions','dialogs','shop','firstHire','layers'
+  off:[],
+  // A/B: A спрашивает о бизнесе на переходе уровня, B предлагает вопрос как бонус в магазине баллов
+  ab:{A:{ask:'gate'},B:{ask:'offer'}},
+  // Скидка за баллы ждёт подтверждения Влада: 1000 баллов = 1%, не больше 10%
+  discount:{per:1000,max:10},
+  services:['Спринт LEADMEET OS, 14 дней','Отдел продаж под ключ','Разработка и сайты']
+};
+var on=function(m){return CONFIG.off.indexOf(m)<0};
+var TG=window.Telegram&&Telegram.WebApp&&Telegram.WebApp.initData?Telegram.WebApp:null;
+if(TG){try{TG.ready();TG.expand();TG.setHeaderColor&&TG.setHeaderColor('#081428');TG.setBackgroundColor&&TG.setBackgroundColor('#081428')}catch(e){}}
+
+/* ===== Состояние ===== */
+var KEY='lm-game-v1',st;
+function fresh(p){return {m:12000,l:0,mt:0,e:0,tl:0,tm:0,deals:0,b:{find:0,research:0,message:0,meet:0,pay:0},lvl:0,pts:0,ans:{},disc:null,prest:p||0,boost:0,ab:null,t:Date.now(),seen:{}}}
+try{st=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!st||!st.b)st=fresh();
+if(!st.ab)st.ab=new URLSearchParams(location.search).get('ab')||(Math.random()<.5?'A':'B');
+function save(){st.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function goal(g,extra){try{var p={ab:st.ab,lvl:st.lvl+1};for(var k in extra)p[k]=extra[k];window.ym&&ym(112489964,'reachGoal',g,p)}catch(e){}}
+
+/* ===== Экономика ===== */
+var B={
+  find:{n:'ИИ-агент поиска',d:'Находит компании из вашей ЦА',cost:10000,layer:'find',c:'AI',h:62,bx:0,by:1,lab:'Поиск'},
+  research:{n:'ИИ-исследователь',d:'Изучает компанию до письма: больше ответов',cost:25000,layer:'find',c:'AI',h:84,bx:1,by:0,lab:'Исследование'},
+  message:{n:'ИИ-автор сообщений',d:'Пишет и дожимает: обрабатывает лиды быстрее',cost:15000,layer:'msg',c:'AI',h:60,bx:2,by:0,lab:'Сообщение'},
+  meet:{n:'Менеджер на встречах',d:'Человек проводит встречи и закрывает сделки',cost:40000,layer:'meet',c:'H',h:78,bx:2,by:1,lab:'Встреча'},
+  pay:{n:'Касса и допродажи',d:'Растёт средний чек',cost:60000,layer:'money',c:'M',h:90,bx:1,by:2,lab:'Оплата'}
+};
+var ORDER=['find','research','message','meet','pay'];
+function cost(k){return Math.round(B[k].cost*Math.pow(1.42,st.b[k])/100)*100}
+function lsum(){var s=0;for(var k in st.b)s+=st.b[k];return s}
+function mult(){var a=Object.keys(st.ans).length;return (1+.15*a)*Math.pow(1.5,st.prest)*(st.boost>Date.now()?2:1)}
+function check(){return 45000*(1+.45*st.b.pay)}
+function rates(){var b=st.b,M=mult();return {lead:.45*b.find*M,proc:(.25+.5*b.message)*M,conv:Math.min(.35,.1+.03*b.research),close:(.06+.1*b.meet)*M}}
+function tick(dt){
+  var r=rates();
+  var nl=r.lead*dt;st.l+=nl;st.tl+=nl;
+  var p=Math.min(st.l,r.proc*dt);st.l-=p;var nm=p*r.conv;st.mt+=nm;st.tm+=nm;
+  var h=Math.min(st.mt,r.close*dt);st.mt-=h;
+  var dealsF=h*.3,g=dealsF*check();
+  st.deals+=dealsF;st.m+=g;st.e+=g;
+  return g;
+}
+function fmt(n){n=Math.floor(n);if(n>=1e9)return (n/1e9).toFixed(1).replace('.',',')+' млрд';if(n>=1e6)return (n/1e6).toFixed(1).replace('.',',')+' млн';return n.toLocaleString('ru-RU')}
+
+/* ===== Уровни, цитаты и вопросы ===== */
+var QUOTES=[
+  ['Цель бизнеса одна: создать клиента.','Питер Друкер'],
+  ['Делайте то, что не масштабируется.','Пол Грэм'],
+  ['Встреча в календаре лучше, чем лид в таблице.','Влад Лев'],
+  ['Если вам не стыдно за первую версию продукта, вы запустились слишком поздно.','Рид Хоффман'],
+  ['Робот ищет и пишет, человек проводит встречу.','Влад Лев'],
+  ['Большинство решений стоит принимать, когда у вас есть около 70% нужной информации.','Джефф Безос'],
+  ['Рассуждать нужно от первых принципов, а не по аналогии.','Илон Маск'],
+  ['Цена это то, что вы платите. Ценность это то, что вы получаете.','Уоррен Баффетт'],
+  ['Что не посчитано, тем не управляют.','Влад Лев']
+];
+var LV=[
+  {n:'Пустой город',test:function(){return true}},
+  {n:'Первый сотрудник',test:function(){return lsum()>=1},hint:'Наймите первого в «Команде»'},
+  {n:'Первые лиды',test:function(){return st.tl>=20},hint:'20 лидов'},
+  {n:'Первая встреча',test:function(){return st.tm>=1},hint:'1 встреча'},
+  {n:'Первые деньги',test:function(){return st.deals>=1},hint:'Первая сделка'},
+  {n:'Отдел продаж',test:function(){return lsum()>=10},hint:'10 улучшений команды'},
+  {n:'Масштаб',test:function(){return st.e>=1e6},hint:'Выручка 1 млн ₽'},
+  {n:'Инвестор',test:function(){return st.e>=4e6},hint:'Выручка 4 млн ₽'},
+  {n:'Экзит',test:function(){return st.e>=15e6},hint:'Выручка 15 млн ₽'}
+];
+var QS=[
+  {k:'niche',q:'Чем занимается ваш реальный бизнес?',why:'Игра подстроит клиентов города под вашу нишу.',ch:['Услуги для бизнеса','Производство','Опт и торговля','IT и digital','Недвижимость','Образование','Другое']},
+  {k:'check',q:'Какой у вас средний чек, ₽?',why:'Посчитаем, сколько вам приносит одна встреча.',num:'150000'},
+  {k:'team',q:'Сколько сейчас продавцов в команде?',why:'Сравним вашу команду с городом.',ch:['Продаю сам','1-2','3-5','6-10','Больше 10']},
+  {k:'leads',q:'Сколько заявок приходит в месяц?',why:'Это вход вашей воронки.',num:'40'},
+  {k:'conv',q:'Из 10 встреч сколько заканчиваются оплатой?',why:'Главная цифра отдела продаж.',ch:['0-1','2','3','4-5','Больше 5','Не считаю']},
+  {k:'pain',q:'Что сейчас мешает продажам больше всего?',why:'Первое, что разберём на встрече.',ch:['Мало заявок','Заявки сливаются','Менеджеры не продают','Нет системы и CRM','Всё держится на мне']},
+  {k:'city',q:'В каком городе ваш бизнес?',why:'Агенты ищут клиентов там, где вы работаете.',txt:'Москва'}
+];
+function nextQ(){for(var i=0;i<QS.length;i++)if(st.ans[QS[i].k]==null)return QS[i];return null}
+
+/* ===== Диалоги агентов с клиентами ===== */
+var NICHE=function(){return st.ans.niche&&st.ans.niche!=='Другое'?st.ans.niche.toLowerCase():'вашей нише'};
+var DLG={
+  find:function(){return [['a','Нашёл 40 компаний в '+NICHE()+', у которых открыта вакансия продавца.'],['c','Откуда знаешь, что им нужно?'],['a','Кто ищет продавца, тот не успевает продавать сам.']]},
+  research:function(){return [['a','Перед письмом прочитал сайт и отзывы. У них заявки висят по 2 дня.'],['c','И что ты им скажешь?'],['a','Не «мы лучшие», а «вот где вы теряете клиентов».']]},
+  message:function(){return [['c','А вы точно не бот?'],['a','Переписку ведёт ИИ-ассистент. На встрече будет живой человек.'],['c','Честно. Давай вторник, 11:00.']]},
+  meet:function(){return [['a','Передаю клиента: боль, бюджет, срок уже собраны.'],['c','Вы первые, кто пришёл с цифрами моей воронки.'],['a','Остальное решит человек на встрече.']]},
+  pay:function(){return [['c','Оплачу, если увижу первые встречи за 2 недели.'],['a','Поэтому цель по встречам прописана в договоре.'],['c','Тогда выставляйте счёт.']]},
+  core:function(){return [['a','Пока вы на встрече, агенты нашли ещё 12 компаний.'],['c','А я что делаю?'],['a','То, что не делегируется: решаете и продаёте.']]}
+};
+
+/* ===== UI ===== */
+var $=function(id){return document.getElementById(id)};
+var sheet=$('sheet'),body=$('sheetBody'),toastT=0,sheetKind=null;
+function toast(t){var e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toastT);toastT=setTimeout(function(){e.classList.remove('on')},2400)}
+function open(html,kind){body.innerHTML=html;sheet.classList.add('open');sheetKind=kind||null}
+function close(){sheet.classList.remove('open');sheetKind=null}
+$('sheetX').onclick=close;
+function tgLink(text){return CONFIG.tg+'?text='+encodeURIComponent(text)}
+function goTG(url){if(TG&&TG.openTelegramLink)TG.openTelegramLink(url);else window.open(url,'_blank','noopener')}
+function summary(){
+  var a=st.ans,out=[];
+  if(a.niche)out.push('ниша: '+a.niche);if(a.check)out.push('чек: '+fmt(a.check)+' ₽');if(a.team)out.push('продавцов: '+a.team);
+  if(a.leads)out.push('заявок в месяц: '+a.leads);if(a.conv)out.push('оплат из 10 встреч: '+a.conv);if(a.pain)out.push('мешает: '+a.pain);if(a.city)out.push('город: '+a.city);
+  return out.length?' Мой бизнес: '+out.join(', ')+'.':' Мой бизнес: ';
+}
+function quote(i){var q=QUOTES[i%QUOTES.length];return '<div class="q">«'+q[0]+'» '+q[1]+'</div>'}
+function realCalc(){
+  var a=st.ans,c=+a.check,cv={'0-1':.5,'2':2,'3':3,'4-5':4.5,'Больше 5':6}[a.conv];
+  if(!c||!cv)return '';
+  var per10=Math.round(c*cv);
+  return '<div class="calc">Расчёт по вашим цифрам: каждые 10 встреч дают около '+fmt(per10)+' ₽. Одна встреча стоит для вас примерно '+fmt(per10/10)+' ₽, даже если не закрылась в оплату сразу.</div>';
+}
+
+/* Карточка вопроса о реальном бизнесе */
+function askCard(q,after){
+  var h='<h3>'+q.q+'</h3><p>'+q.why+' За ответ +100 баллов и команда работает на 15% быстрее.</p>';
+  if(q.ch){h+='<div class="chips">'+q.ch.map(function(c){return '<button data-v="'+c+'">'+c+'</button>'}).join('')+'</div>'}
+  else{h+='<input class="inp" id="qIn" '+(q.num?'inputmode="numeric" placeholder="'+q.num+'"':'placeholder="'+q.txt+'"')+'><div class="err" id="qErr"></div><button class="btn pri" id="qOk">Ответить</button>'}
+  h+='<button class="btn" id="qSkip">Пропустить</button><div class="note">Ответы остаются на этом телефоне. Они уйдут Владу, только если вы сами отправите сообщение в Telegram.</div>';
+  open(h,'ask');
+  function done(v){st.ans[q.k]=v;st.pts+=100;goal('game_answer',{q:q.k});save();toast('+100 баллов. Команда быстрее на 15%');var rc=realCalc();if(rc&&(q.k==='check'||q.k==='conv')){open('<h3>Это уже не игра</h3>'+rc+'<p>Город растёт на тех же законах: больше встреч при той же конверсии.</p><button class="btn pri" id="cOk">Играть дальше</button>');$('cOk').onclick=function(){close();after&&after()}}else{close();after&&after()}}
+  body.querySelectorAll('.chips button').forEach(function(b){b.onclick=function(){done(b.getAttribute('data-v'))}});
+  if($('qOk')){var inp=$('qIn');inp.oninput=function(){$('qErr').textContent=''};$('qOk').onclick=function(){var v=inp.value.trim();if(q.num){v=v.replace(/\s/g,'');if(!/^\d+$/.test(v)||+v<=0){$('qErr').textContent='Введите число без букв, например '+q.num;return}v=+v}else if(v.length<2){$('qErr').textContent='Напишите город, например '+q.txt;return}done(v)}}
+  $('qSkip').onclick=function(){close();after&&after()};
+}
+
+/* Повышение уровня */
+function checkLevel(){
+  var n=st.lvl+1;if(n>=LV.length||!LV[n].test())return;
+  st.lvl=n;st.pts+=50;save();goal('game_level_'+(n+1));
+  if(n===LV.length-1){finale();return}
+  var h='<h3>Уровень '+(n+1)+': '+LV[n].n+'</h3><p>'+lvText(n)+'</p>'+quote(n);
+  var q=on('questions')&&nextQ();
+  if(q&&CONFIG.ab[st.ab]&&CONFIG.ab[st.ab].ask==='gate'){h+='<button class="btn pri" id="lvQ">Сделать город похожим на мой бизнес</button><button class="btn" id="lvOk">Играть дальше</button>'}
+  else h+='<button class="btn pri" id="lvOk">Играть дальше</button>';
+  if(n===7)h=investorHtml();
+  open(h,'lvl');
+  if($('lvQ'))$('lvQ').onclick=function(){askCard(q)};
+  if($('lvOk'))$('lvOk').onclick=close;
+  bindInvestor();
+}
+function lvText(n){return ['','Первый сотрудник в команде. Дальше лиды пойдут без вас.','Лиды есть. Теперь их надо превратить во встречи.','Первая встреча. Её проводит человек, остальное делают агенты.','Первые деньги. Система окупает себя, если считать каждую встречу.','У вас отдел продаж. Узкое место теперь не люди, а процесс.','Выручка 1 млн ₽. На такие цифры приходят инвесторы.'][n]||''}
+function investorHtml(){return '<h3>Уровень 8: Инвестор</h3><p>Инвестор смотрит на ваш бизнес. Что показываете?</p><button class="btn pri" data-inv="f">Воронку по неделям: лиды, встречи, оплаты</button><button class="btn" data-inv="p">Красивую презентацию</button>'+quote(5)}
+function bindInvestor(){body.querySelectorAll('[data-inv]').forEach(function(b){b.onclick=function(){var f=b.getAttribute('data-inv')==='f';if(f){st.boost=Date.now()+180000;toast('Инвестор вложился. Ускорение ×2 на 3 минуты')}else toast('Инвестор попросил цифры. Покажете позже');save();close()}})}
+
+/* Финал: экзит */
+function finale(){
+  goal('game_exit');
+  var h='<h3>Экзит. Бизнес продан</h3><p>Вы прошли путь от первого ИИ-агента до продажи бизнеса за '+fmt(st.e)+' ₽ выручки. В игре. Хотите так же в жизни?</p>'+realCalc()+
+  '<button class="btn pri" data-cta="consult">Разобрать мою воронку за 20 минут</button>'+
+  '<button class="btn" data-cta="invest">Обсудить инвестиции в LEADMEET</button>'+
+  '<button class="btn" data-cta="part2">Хочу вторую часть игры</button>'+
+  '<button class="btn" id="again">Новый город с множителем ×'+Math.pow(1.5,st.prest+1).toFixed(1).replace('.',',')+'</button>'+quote(6);
+  open(h,'end');bindCTA();
+  $('again').onclick=function(){var p=st.prest+1,keep={pts:st.pts,ans:st.ans,disc:st.disc,ab:st.ab};st=fresh(p);for(var k in keep)st[k]=keep[k];save();rebuild();close();toast('Новый город. Всё растёт в '+Math.pow(1.5,p).toFixed(1).replace('.',',')+' раза быстрее')};
+}
+var CTA={
+  consult:{g:'game_cta_consult',t:'Хочу разобрать воронку за 20 минут.',q:'«Игра заканчивается, а воронка работает каждый день.» (Влад Лев)'},
+  invest:{g:'game_cta_invest',t:'Хочу обсудить инвестиции в LEADMEET.',q:'«Настоящие художники выпускают продукт.» (Стив Джобс)'},
+  part2:{g:'game_cta_part2',t:'Прошёл «Город сделок» до экзита. Хочу вторую часть.',q:'«Вторая часть начинается там, где заканчиваются отговорки.» (Влад Лев)'}
+};
+function bindCTA(){body.querySelectorAll('[data-cta]').forEach(function(b){b.onclick=function(){var c=CTA[b.getAttribute('data-cta')];goal(c.g);goTG(tgLink('Здравствуйте! '+c.t+' '+c.q+summary()))}})}
+
+/* Команда: найм и прокачка */
+function buildList(){
+  var h='<h3>Команда</h3><p>Каждый сотрудник это этап воронки. Синие работают круглосуточно, золотой проводит встречи.</p>';
+  ORDER.forEach(function(k){var c=cost(k),lv=st.b[k];h+='<div class="row"><div class="t"><b>'+B[k].n+(lv?' · ур. '+lv:'')+'</b><small>'+B[k].d+'</small></div><button data-buy="'+k+'"'+(st.m<c?' disabled':'')+'>'+(lv?'Улучшить':'Нанять')+'<br>'+fmt(c)+' ₽</button></div>'});
+  open(h,'build');bindBuy();
+}
+function bindBuy(){body.querySelectorAll('[data-buy]').forEach(function(b){b.onclick=function(){buy(b.getAttribute('data-buy'))}})}
+function buy(k){var c=cost(k);if(st.m<c){toast('Не хватает '+fmt(c-st.m)+' ₽. Продавайте или ждите сделок');return}
+  st.m-=c;st.b[k]++;if(lsum()===1)goal('game_first_hire',{who:k});save();rebuild();
+  if(sheetKind==='build')buildList();else if(sheetKind==='bld')bldSheet(k);toast(B[k].n+(st.b[k]===1?' в команде':' ур. '+st.b[k]))}
+
+/* Первый найм: наживка */
+function firstHire(){
+  if(!on('firstHire')||lsum()>0||st.seen.fh)return;
+  open('<h3>Кого нанимаете первым?</h3><p>У вас 12 000 ₽ и пустой город. От первого найма зависит, кто будет приводить клиентов.</p><button class="btn pri" data-fh="ai">ИИ-агент поиска · 10 000 ₽</button><button class="btn" data-fh="mgr">Менеджер по продажам · 40 000 ₽</button><button class="btn" data-fh="self">Сначала продам сам</button><div class="note">Нажимайте «Найти клиента» или башню в центре, чтобы продавать самому.</div>','fh');
+  body.querySelectorAll('[data-fh]').forEach(function(b){b.onclick=function(){var v=b.getAttribute('data-fh');st.seen.fh=1;
+    if(v==='ai'){close();buy('find')}
+    else if(v==='mgr'){open('<h3>Менеджер без лидов простаивает</h3><p>Зарплата идёт, а звонить некому. Большинство владельцев начинают с найма продавца и через три месяца ищут, откуда брать заявки.</p><button class="btn pri" id="fhAi">Нанять ИИ-агента поиска</button>'+quote(0));$('fhAi').onclick=function(){close();buy('find')}}
+    else{close();toast('Нажимайте «Найти клиента»')}
+    save()}});
+}
+
+/* Здание: диалог и прокачка */
+function bldSheet(k){
+  var isCore=k==='core',d=isCore?null:B[k],lv=isCore?0:st.b[k];
+  var h='<h3>'+(isCore?'Ваш бизнес':d.lab+': '+d.n)+'</h3>';
+  if(on('dialogs')&&(isCore||lv>0)){h+='<div class="chat">'+DLG[k]().map(function(m){return '<div class="'+m[0]+'">'+m[1]+'</div>'}).join('')+'</div>'}
+  else if(!isCore)h+='<p>Здесь пусто. '+d.d+'.</p>';
+  if(isCore)h+='<p>Нажимайте на башню, чтобы продавать самому. Каждое нажатие даёт лида.</p><button class="btn pri" id="toTeam">Открыть команду</button>';
+  else{var c=cost(k);h+='<button class="btn pri" data-buy="'+k+'"'+(st.m<c?' disabled':'')+'>'+(lv?'Улучшить до ур. '+(lv+1):'Нанять')+' · '+fmt(c)+' ₽</button>'}
+  h+='<a class="btn" href="#" id="wantReal">Хочу такого агента в реальном бизнесе</a>';
+  open(h,'bld');bindBuy();
+  if($('toTeam'))$('toTeam').onclick=buildList;
+  $('wantReal').onclick=function(e){e.preventDefault();goal('game_cta_agent',{b:k});goTG(tgLink('Здравствуйте! Играл в «Город сделок», хочу '+(isCore?'систему':'«'+(d?d.n:'')+'»')+' в реальном бизнесе. «Робот ищет и пишет, человек проводит встречу.» (Влад Лев)'+summary()))};
+}
+
+/* Баллы и скидка */
+function shop(){
+  goal('game_shop');
+  var pct=Math.min(CONFIG.discount.max,Math.floor(st.pts/CONFIG.discount.per));
+  var h='<h3>Баллы LEADMEET: '+fmt(st.pts)+'</h3><p>Баллы даются за уровни, ответы о вашем бизнесе и приглашение друга. Их можно обменять на скидку для реальной услуги: '+CONFIG.discount.per.toLocaleString('ru-RU')+' баллов = 1%, до '+CONFIG.discount.max+'%.</p>';
+  var q=on('questions')&&nextQ();
+  if(q)h+='<button class="btn pri" id="shQ">Ответить на вопрос о бизнесе · +100</button>';
+  h+='<button class="btn" id="shShare">Пригласить друга · +200</button>';
+  h+='<button class="btn" id="shBoost"'+(st.pts<150?' disabled':'')+'>Ускорение ×2 на 2 минуты · 150 баллов</button>';
+  if(on('shop')){h+='<p style="margin-top:14px"><b>Скидка '+pct+'%</b> на услугу на выбор:</p>'+CONFIG.services.map(function(s,i){return '<button class="btn" data-sv="'+i+'"'+(pct<1?' disabled':'')+'>'+s+'</button>'}).join('')+'<div class="note">Скидку подтверждает Влад в Telegram. Баллы списываются после подтверждения.</div>'}
+  open(h,'shop');
+  if($('shQ'))$('shQ').onclick=function(){askCard(q,shop)};
+  $('shShare').onclick=function(){goal('game_share');var u=CONFIG.gameUrl+'?ref=share',t='Построй бизнес с ИИ-командой и дойди до экзита';
+    if(TG&&TG.openTelegramLink)TG.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(u)+'&text='+encodeURIComponent(t));
+    else if(navigator.share)navigator.share({title:'Город сделок',text:t,url:u}).catch(function(){});
+    else window.open('https://t.me/share/url?url='+encodeURIComponent(u)+'&text='+encodeURIComponent(t),'_blank','noopener');
+    if(!st.seen.share){st.seen.share=1;st.pts+=200;save();toast('+200 баллов')}};
+  $('shBoost').onclick=function(){if(st.pts<150)return;st.pts-=150;st.boost=Date.now()+120000;save();toast('Ускорение ×2 на 2 минуты');close()};
+  body.querySelectorAll('[data-sv]').forEach(function(b){b.onclick=function(){var s=CONFIG.services[+b.getAttribute('data-sv')];st.disc={pct:pct,s:s};save();goal('game_discount',{pct:pct});
+    goTG(tgLink('Здравствуйте! Набрал '+fmt(st.pts)+' баллов в «Городе сделок». Хочу применить скидку '+pct+'% на услугу «'+s+'». «Хорошая сделка начинается с честных цифр.» (Влад Лев)'+summary()))}});
+}
+$('vPtsBox').onclick=shop;$('vPtsBox').onkeydown=function(e){if(e.key==='Enter')shop()};
+$('openBuild').onclick=buildList;
+
+/* Клик-продажа */
+function sell(x,y){var n=(1+lsum()*.2)*Math.pow(1.5,st.prest);st.l+=n;st.tl+=n;pop(x,y,'+'+Math.max(1,Math.round(n))+' лид');if(navigator.vibrate)try{navigator.vibrate(8)}catch(e){}}
+function pop(x,y,t){var e=document.createElement('div');e.className='pop';e.textContent=t;e.style.left=(x-24)+'px';e.style.top=(y-20)+'px';document.body.appendChild(e);setTimeout(function(){e.remove()},1000)}
+$('sell').onclick=function(e){var r=e.currentTarget.getBoundingClientRect();sell(r.left+r.width/2,r.top)};
+
+/* ===== Карта: изометрия, слои, жесты ===== */
+var cv=$('map'),ctx=cv.getContext('2d'),TW=64,TH=32,N=10,ROAD=[0,3,6,9];
+var COL={AI:['#2D8CFF','#1A5FBF','#164E9E'],H:['#FFD38A','#D9A24F','#B98334'],M:['#22C55E','#15803D','#166534'],N:['#8DBFFF','#2D7CE0','#1F62B8'],F:['#17407F','#102F5E','#0C2549'],S:['#2A3E5E','#1E2F4A','#16243A']};
+var CORE={bx:1,by:1,h:150,c:'N'};
+var W=0,H=0,dpr=1,base=1,cam={x:0,y:0,z:1},layer='all',boxes=[],agents=[],seed=7;
+function rng(s){return function(){s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+function P(gx,gy,z){var s=base*cam.z;return [W/2+cam.x+(gx-gy)*TW/2*s,H*.56+cam.y+(gx+gy-N)*TH/2*s-(z||0)*s]}
+function hOf(k){var lv=st.b[k];return lv?B[k].h*(.45+.12*Math.min(lv,10)):6}
+function mkBox(gx,gy,w,d,h,col,r,lit,k){var wins=[],i,j,f;for(f=0;f<2;f++)for(i=0;i<3;i++)for(j=0;j<Math.max(2,Math.round(h/12));j++)if(r()<lit)wins.push([f,(i+.5)/3,(j+.6)/(Math.max(2,Math.round(h/12))+.4)]);return {gx:gx,gy:gy,w:w,d:d,h:h,col:col,wins:wins,k:k}}
+function rebuild(){
+  var r=rng(seed);boxes=[];
+  ORDER.forEach(function(k){var d=B[k],gx=1+3*d.bx,gy=1+3*d.by,lv=st.b[k];
+    boxes.push(mkBox(gx+.45,gy+.45,1.1,1.1,hOf(k),lv?COL[d.c]:COL.S,r,lv?.45:0,k));
+    for(var i=1;i<Math.min(lv,4);i++){boxes.push(mkBox(gx+(i%2?.05:1.55),gy+(i>1?1.55:.05),.4,.4,14+r()*20,COL.F,r,.35,k))}
+  });
+  var gx=4,gy=4,tier=Math.min(1,st.e/15e6);
+  boxes.push(mkBox(gx,gy,2,2,8,COL.F,r,0,'core'));
+  boxes.push(mkBox(gx+.4,gy+.4,1.2,1.2,90+60*tier+20*st.prest,COL.N,r,.6,'core'));
+  [[0,0],[2,2],[0,2]].forEach(function(f){var n=Math.min(4,Math.floor(st.lvl/2)+st.prest);for(var i=0;i<n;i++){var w=.6+r()*.5,d=.6+r()*.5;boxes.push(mkBox(1+3*f[0]+r()*(2-w),1+3*f[1]+r()*(2-d),w,d,14+r()*40,COL.F,r,.4,null))}});
+  var want=Math.min(44,lsum()*2+1),hum=Math.min(6,st.b.meet);
+  while(agents.length<want+hum){var hm=agents.filter(function(a){return a.human}).length<hum;agents.push(mkAgent(hm))}
+  if(agents.length>want+hum)agents.length=want+hum;
+}
+var DOOR={find:[1,2],research:[2,1],message:[3,1],meet:[3,2],pay:[2,3],core:[2,2]};
+function bfs(a,b){if(a[0]===b[0]&&a[1]===b[1])return [];var q=[[a[0],a[1],null]],seen={};seen[a]=1;while(q.length){var c=q.shift();if(c[0]===b[0]&&c[1]===b[1]){var p=[];while(c&&c[2]){p.unshift([c[0],c[1]]);c=c[2]}return p}[[1,0],[-1,0],[0,1],[0,-1]].forEach(function(d){var x=c[0]+d[0],y=c[1]+d[1];if(x<0||y<0||x>3||y>3||seen[x+','+y])return;seen[x+','+y]=1;q.push([x,y,c])})}return []}
+var LEADC={find:'#9CC3F5',research:'#5AA9FF',message:'#FFD38A',meet:'#7DE3A8',pay:'#22C55E',core:null};
+var LYR={find:['find','research'],msg:['message'],meet:['meet'],money:['pay','core']};
+function mkAgent(h){var route=h?['meet','pay','core']:['core','find','research','message'],ri=Math.floor(Math.random()*route.length),n=DOOR[route[ri]].slice();return {human:h,route:route,ri:ri,node:n,from:n,path:[],t:0,speed:.8+Math.random()*.6,wait:Math.random()*1.4,lane:(Math.random()-.5)*.38,lead:LEADC[route[ri]]}}
+function stepA(a,dt){if(a.wait>0){a.wait-=dt;if(a.wait<=0){a.ri=(a.ri+1)%a.route.length;a.path=bfs(a.node,DOOR[a.route[a.ri]]);a.t=0;a.from=a.node;if(!a.path.length)a.wait=.4}return}
+  if(!a.path.length){a.wait=.5+Math.random()*.8;a.lead=LEADC[a.route[a.ri]];return}
+  a.t+=a.speed*dt/3;if(a.t>=1){a.node=a.path[0];a.from=a.node;a.path.shift();a.t=0;if(!a.path.length){a.wait=.5+Math.random()*.8;a.lead=LEADC[a.route[a.ri]]}}}
+function lit(k){return layer==='all'||(LYR[layer]&&LYR[layer].indexOf(k)>=0)}
+function resize(){dpr=Math.min(2,window.devicePixelRatio||1);W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);base=Math.min(W*.94/(N*TW),(H-230)/(N*TH+160))}
+function poly(pts,fill){ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(var i=1;i<pts.length;i++)ctx.lineTo(pts[i][0],pts[i][1]);ctx.closePath();ctx.fillStyle=fill;ctx.fill()}
+function drawBox(b){var s=base*cam.z,c=b.col,h=b.h*s,p0=P(b.gx,b.gy+b.d),p1=P(b.gx+b.w,b.gy+b.d),p2=P(b.gx+b.w,b.gy);
+  ctx.globalAlpha=(b.k&&!lit(b.k))?.22:1;
+  poly([p0,p1,[p1[0],p1[1]-h],[p0[0],p0[1]-h]],c[1]);poly([p1,p2,[p2[0],p2[1]-h],[p1[0],p1[1]-h]],c[2]);
+  poly([P(b.gx,b.gy,b.h),P(b.gx+b.w,b.gy,b.h),P(b.gx+b.w,b.gy+b.d,b.h),P(b.gx,b.gy+b.d,b.h)],c[0]);
+  ctx.fillStyle='#FFE2A8';var ws=Math.max(1,1.5*s);b.wins.forEach(function(w){var pt=w[0]===0?P(b.gx+w[1]*b.w,b.gy+b.d,w[2]*b.h):P(b.gx+b.w,b.gy+w[1]*b.d,w[2]*b.h);ctx.fillRect(pt[0]-ws/2,pt[1]-ws/2,ws,ws)});
+  ctx.globalAlpha=1}
+function agentXY(a){var fx=ROAD[a.from[0]],fy=ROAD[a.from[1]],x=fx,y=fy;if(a.path.length){var tx=ROAD[a.path[0][0]],ty=ROAD[a.path[0][1]];x=fx+(tx-fx)*a.t;y=fy+(ty-fy)*a.t;if(tx!==fx)y+=a.lane;else x+=a.lane}else{x+=a.lane*.6;y+=a.lane*.6}return [x,y]}
+function drawAgent(a){var xy=agentXY(a),p=P(xy[0],xy[1],0),u=Math.max(1.3,base*cam.z*1.9),k=a.route[a.ri];
+  ctx.globalAlpha=(a.wait>0?.4:1)*(lit(k)?1:.25);
+  ctx.fillStyle='rgba(0,0,0,.35)';ctx.beginPath();ctx.ellipse(p[0],p[1],3.4*u,1.6*u,0,0,6.3);ctx.fill();
+  ctx.fillStyle=a.human?'#FFD38A':'#7FE3FF';ctx.fillRect(p[0]-1.5*u,p[1]-6*u,3*u,6*u);
+  ctx.beginPath();ctx.arc(p[0],p[1]-8*u,2.3*u,0,6.3);ctx.fillStyle=a.human?'#FFF1D2':'#EAF9FF';ctx.fill();
+  if(a.lead&&a.wait<=0){ctx.beginPath();ctx.arc(p[0],p[1]-13.5*u,1.9*u,0,6.3);ctx.fillStyle=a.lead;ctx.fill()}
+  ctx.globalAlpha=1}
+function label(text,gx,gy,z,c,dim){var s=base*cam.z,p=P(gx,gy,z),fs=Math.max(10,Math.min(15,11*s*1.3));ctx.font='700 '+fs+'px Manrope,Arial,sans-serif';
+  var tw=ctx.measureText(text).width,pw=tw+fs*1.1,ph=fs*1.7,x=p[0]-pw/2,y=p[1]-ph-12*s;
+  ctx.globalAlpha=dim?.35:1;ctx.beginPath();ctx.roundRect?ctx.roundRect(x,y,pw,ph,ph/2):ctx.rect(x,y,pw,ph);ctx.fillStyle='rgba(8,18,40,.92)';ctx.fill();
+  ctx.lineWidth=1;ctx.strokeStyle=c;ctx.stroke();ctx.fillStyle='#F2F6FF';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,p[0],y+ph/2+.5);ctx.globalAlpha=1}
+var t0=performance.now();
+function draw(){
+  var now=performance.now()-t0,i,j;ctx.clearRect(0,0,W,H);
+  for(i=0;i<N;i++)for(j=0;j<N;j++){var road=ROAD.indexOf(i)>=0||ROAD.indexOf(j)>=0;poly([P(i,j),P(i+1,j),P(i+1,j+1),P(i,j+1)],road?'rgba(255,255,255,.07)':'rgba(45,140,255,.11)')}
+  var pulse=(Math.sin(now*.0022)+1)/2,cb=P(5,5,0),s=base*cam.z;
+  ctx.beginPath();ctx.ellipse(cb[0],cb[1],(50+pulse*18)*s,(25+pulse*9)*s,0,0,6.3);ctx.strokeStyle='rgba(255,211,138,'+(.5-pulse*.3)+')';ctx.lineWidth=1.2;ctx.stroke();
+  // потоки между открытыми этапами
+  var chain=['find','research','message','meet','pay'].filter(function(k){return st.b[k]>0});chain.push('core');
+  for(i=0;i<chain.length-1;i++){var A=chain[i],Bk=chain[i+1],ga=A==='core'?[5,5,170]:[1+3*B[A].bx+1,1+3*B[A].by+1,hOf(A)+6],gb=Bk==='core'?[5,5,170]:[1+3*B[Bk].bx+1,1+3*B[Bk].by+1,hOf(Bk)+6];
+    var pa=P(ga[0],ga[1],ga[2]),pb=P(gb[0],gb[1],gb[2]),cx=(pa[0]+pb[0])/2,cy=Math.min(pa[1],pb[1])-34*s,on1=lit(A)||lit(Bk);
+    ctx.globalAlpha=on1?1:.2;ctx.beginPath();ctx.moveTo(pa[0],pa[1]);ctx.quadraticCurveTo(cx,cy,pb[0],pb[1]);ctx.strokeStyle='rgba(127,227,255,.32)';ctx.lineWidth=1;ctx.stroke();
+    for(var q=0;q<2;q++){var t=(now*.00028+q*.5+i*.17)%1,m=1-t;ctx.beginPath();ctx.arc(m*m*pa[0]+2*m*t*cx+t*t*pb[0],m*m*pa[1]+2*m*t*cy+t*t*pb[1],Math.max(1.4,2.2*s),0,6.3);ctx.fillStyle=Bk==='core'?'#22C55E':'#7FE3FF';ctx.fill()}ctx.globalAlpha=1}
+  var Q=[];boxes.forEach(function(b){Q.push({z:b.gx+b.w+b.gy+b.d,f:function(){drawBox(b)}})});
+  agents.forEach(function(a){var xy=agentXY(a);Q.push({z:xy[0]+xy[1]+.3,f:function(){drawAgent(a)}})});
+  Q.sort(function(a,b){return a.z-b.z});Q.forEach(function(x){x.f()});
+  ORDER.forEach(function(k){var d=B[k],lv=st.b[k];label(lv?d.lab+' · '+lv:d.lab+' · нанять',1+3*d.bx+1,1+3*d.by+1,hOf(k),d.c==='H'?'#FFD38A':d.c==='M'?'#22C55E':lv?'rgba(120,170,255,.7)':'rgba(255,255,255,.3)',!lit(k))});
+  var top=P(5,5,boxes.filter(function(b){return b.k==='core'})[1].h+8),g=ctx.createRadialGradient(top[0],top[1],0,top[0],top[1],(16+pulse*6)*s);g.addColorStop(0,'rgba(255,226,168,1)');g.addColorStop(1,'rgba(255,211,138,0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(top[0],top[1],(16+pulse*6)*s,0,6.3);ctx.fill();
+  label('Ваш бизнес',6.6,6.6,-14,'#FFD38A',!lit('core'));
+}
+/* попадание по зданию: проверка вертикального прямоугольника */
+function hit(x,y){var best=null,bz=-1;boxes.forEach(function(b){if(!b.k)return;var s=base*cam.z,l=P(b.gx,b.gy+b.d),r=P(b.gx+b.w,b.gy),bt=P(b.gx+b.w,b.gy+b.d),tp=P(b.gx,b.gy,b.h);
+  if(x>=l[0]-6&&x<=r[0]+6&&y>=tp[1]-30*s&&y<=bt[1]+6){var z=b.gx+b.gy;if(z>bz){bz=z;best=b.k}}});return best}
+/* жесты: перетаскивание, щипок, колесо */
+var ptr={},pinch=null,down=null;
+function clampCam(){cam.z=Math.max(.7,Math.min(3.2,cam.z));var lim=Math.max(W,H)*cam.z*.6;cam.x=Math.max(-lim,Math.min(lim,cam.x));cam.y=Math.max(-lim,Math.min(lim,cam.y))}
+function zoomAt(f,x,y){var z0=cam.z;cam.z=Math.max(.7,Math.min(3.2,cam.z*f));var k=cam.z/z0;cam.x=(cam.x+W/2-x)*k-(W/2-x);cam.y=(cam.y+H*.56-y)*k-(H*.56-y);clampCam()}
+cv.addEventListener('pointerdown',function(e){cv.setPointerCapture(e.pointerId);ptr[e.pointerId]=[e.clientX,e.clientY];var ids=Object.keys(ptr);if(ids.length===2){var a=ptr[ids[0]],b=ptr[ids[1]];pinch={d:Math.hypot(a[0]-b[0],a[1]-b[1])};down=null}else down={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y,moved:false}});
+cv.addEventListener('pointermove',function(e){if(!ptr[e.pointerId])return;ptr[e.pointerId]=[e.clientX,e.clientY];var ids=Object.keys(ptr);
+  if(ids.length===2&&pinch){var a=ptr[ids[0]],b=ptr[ids[1]],d=Math.hypot(a[0]-b[0],a[1]-b[1]);zoomAt(d/pinch.d,(a[0]+b[0])/2,(a[1]+b[1])/2);pinch.d=d}
+  else if(down){var dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>8)down.moved=true;if(down.moved){cam.x=down.cx+dx;cam.y=down.cy+dy;clampCam()}}});
+function up(e){var wasTap=down&&!down.moved&&Object.keys(ptr).length===1;delete ptr[e.pointerId];if(Object.keys(ptr).length<2)pinch=null;
+  if(wasTap){var k=hit(e.clientX,e.clientY);if(k==='core'){sell(e.clientX,e.clientY)}else if(k){goal('game_building',{b:k});bldSheet(k)}else if(sheet.classList.contains('open'))close()}
+  if(!Object.keys(ptr).length)down=null}
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+cv.addEventListener('wheel',function(e){e.preventDefault();zoomAt(e.deltaY<0?1.12:1/1.12,e.clientX,e.clientY)},{passive:false});
+cv.addEventListener('dblclick',function(e){e.preventDefault()});
+$('zIn').onclick=function(){zoomAt(1.25,W/2,H*.56)};$('zOut').onclick=function(){zoomAt(1/1.25,W/2,H*.56)};
+document.querySelectorAll('.layers button').forEach(function(b){b.onclick=function(){layer=b.getAttribute('data-l');document.querySelectorAll('.layers button').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});goal('game_layer',{l:layer})}});
+if(!on('layers'))document.querySelector('.layers').style.display='none';
+
+/* ===== HUD и цикл ===== */
+function hud(){$('vMoney').textContent=fmt(st.m);$('vLeads').textContent=fmt(st.l);$('vMeet').textContent=fmt(st.mt);$('vPts').textContent=fmt(st.pts);
+  var n=st.lvl;$('vLvl').textContent=n+1;$('vLvlName').textContent=LV[n].n;var nx=LV[n+1];$('vNext').textContent=nx?'дальше: '+nx.hint:'';
+  var pr=0;if(nx){if(n+1===2)pr=st.tl/20;else if(n+1===5)pr=lsum()/10;else if(n+1===6)pr=st.e/1e6;else if(n+1===7)pr=st.e/4e6;else if(n+1===8)pr=st.e/15e6;else pr=0}
+  $('vBar').style.width=Math.min(100,Math.round(pr*100))+'%'}
+var lastT=performance.now(),acc=0,saveT=0,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function loop(now){var dt=Math.min(.1,(now-lastT)/1000);lastT=now;
+  var before=st.deals;tick(dt);if(Math.floor(st.deals)>Math.floor(before)){var cp=P(5,5,120);pop(cp[0],cp[1],'+'+fmt(check())+' ₽')}
+  if(!reduce)agents.forEach(function(a){stepA(a,dt)});
+  acc+=dt;if(acc>.25){acc=0;hud();if(!sheet.classList.contains('open'))checkLevel()}
+  saveT+=dt;if(saveT>5){saveT=0;save()}
+  draw();requestAnimationFrame(loop)}
+/* доход за время отсутствия, не больше двух часов */
+(function(){var away=Math.min(7200,(Date.now()-(st.t||Date.now()))/1000);if(away>60&&lsum()>0){var g=0,steps=Math.ceil(away/5);for(var i=0;i<steps;i++)g+=tick(5);if(g>0)setTimeout(function(){toast('Пока вас не было, команда заработала '+fmt(g)+' ₽')},800)}})();
+resize();cam.z=W<600?1.55:1.1;addEventListener('resize',resize);rebuild();hud();goal('game_open',{tg:TG?1:0,ref:new URLSearchParams(location.search).get('ref')||''});
+document.addEventListener('visibilitychange',function(){if(document.hidden)save()});
+setTimeout(firstHire,600);
+requestAnimationFrame(loop);
+window.__lmGame={st:function(){return st},tick:tick,save:save,check:checkLevel};
+})();
+</script>
+</body>
+</html>
