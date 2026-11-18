@@ -125,6 +125,13 @@ if(!st.ab)st.ab=new URLSearchParams(location.search).get('ab')||(Math.random()<.
 function save(){st.t=Date.now();try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
 function goal(g,extra){try{var p={ab:st.ab,lvl:st.lvl+1};for(var k in extra)p[k]=extra[k];window.ym&&ym(112489964,'reachGoal',g,p)}catch(e){}}
 
+/* ===== Партнёры: анонимный код, первый заход фиксирует пригласившего ===== */
+var RKEY='lm-ref-v1',RA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',RX=/^[ABCDEFGHJKLMNPQRSTUVWXYZ2-9]{6}$/,rf={};
+try{rf=JSON.parse(localStorage.getItem(RKEY))||{}}catch(e){}
+if(!RX.test(rf.me||'')){rf.me='';var rb=new Uint8Array(6);try{crypto.getRandomValues(rb)}catch(e){for(var ri=0;ri<6;ri++)rb[ri]=Math.random()*256}for(var rj=0;rj<6;rj++)rf.me+=RA.charAt(rb[rj]%RA.length)}
+if(!rf.ref){var rq=(new URLSearchParams(location.search).get('r')||'').toUpperCase();if(RX.test(rq)&&rq!==rf.me)rf.ref=rq}
+try{localStorage.setItem(RKEY,JSON.stringify(rf))}catch(e){}
+
 /* ===== Экономика ===== */
 var B={
   find:{n:'ИИ-агент поиска',d:'Находит компании из вашей ЦА',cost:10000,layer:'find',c:'AI',h:62,bx:0,by:1,lab:'Поиск'},
@@ -208,7 +215,8 @@ function summary(){
   var a=st.ans,out=[];
   if(a.niche)out.push('ниша: '+a.niche);if(a.check)out.push('чек: '+fmt(a.check)+' ₽');if(a.team)out.push('продавцов: '+a.team);
   if(a.leads)out.push('заявок в месяц: '+a.leads);if(a.conv)out.push('оплат из 10 встреч: '+a.conv);if(a.pain)out.push('мешает: '+a.pain);if(a.city)out.push('город: '+a.city);
-  return out.length?' Мой бизнес: '+out.join(', ')+'.':' Мой бизнес: ';
+  var tail=on('referral')?(rf.ref?' Код друга: '+rf.ref+' (согласен, что знакомый получит бонус за мою оплату).':'')+' Мой код: '+rf.me+'.':'';
+  return (out.length?' Мой бизнес: '+out.join(', ')+'.':' Мой бизнес: ')+tail;
 }
 function quote(i){var q=QUOTES[i%QUOTES.length];return '<div class="q">«'+q[0]+'» '+q[1]+'</div>'}
 function realCalc(){
@@ -304,23 +312,34 @@ function bldSheet(k){
   $('wantReal').onclick=function(e){e.preventDefault();goal('game_cta_agent',{b:k});goTG(tgLink('Здравствуйте! Играл в «Город сделок», хочу '+(isCore?'систему':'«'+(d?d.n:'')+'»')+' в реальном бизнесе. «Робот ищет и пишет, человек проводит встречу.» (Влад Лев)'+summary()))};
 }
 
+/* Партнёры: бонус только с оплаченной услуги, не за приглашение */
+function partner(){
+  goal('game_partner_open');
+  var link=CONFIG.gameUrl+'?r='+rf.me;
+  open('<h3>Партнёры: рекомендуйте и получайте бонусы</h3>'
+   +'<p>Поделитесь своей ссылкой. Когда ваш знакомый оплатит услугу LEADMEET, вы получите бонус на скидку: 10% с его оплаты, 5% с оплат тех, кого приведёт он, и 2% на третьем уровне.</p>'
+   +'<div class="calc">Ваш код: <b id="pCode"></b><br><span id="pLink" style="word-break:break-all"></span></div>'
+   +'<button class="btn pri" id="pShare">Отправить ссылку знакомому</button><button class="btn" id="pCopy">Скопировать ссылку</button><button class="btn" id="pStat">Показать мою сеть и бонусы</button>'
+   +'<div class="note">За приглашение и регистрацию бонусов нет, только за оплаченную услугу. Бонус начисляется через 14 дней после оплаты, если не было возврата, и покрывает до 30% цены следующей услуги. Это скидка, а не доход, деньгами она не выплачивается и не гарантирована. Бонусы и сеть подтверждает Влад в Telegram, в вашем браузере они не считаются.</div>','partner');
+  $('pCode').textContent=rf.me;$('pLink').textContent=link;
+  $('pShare').onclick=function(){goal('game_partner_share');var t='Построй бизнес с ИИ-командой и дойди до экзита';goTG('https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(t))};
+  $('pCopy').onclick=function(){goal('game_partner_copy');try{navigator.clipboard.writeText(link).then(function(){toast('Ссылка скопирована')},function(){toast('Выделите и скопируйте ссылку')})}catch(e){toast('Выделите и скопируйте ссылку')}};
+  $('pStat').onclick=function(){goal('game_partner_stat');goTG(tgLink('Здравствуйте! Покажите мою партнёрскую сеть и бонусы. Мой код: '+rf.me+'. «Хорошая сделка начинается с честных цифр.» (Влад Лев)'))};
+}
+
 /* Баллы и скидка */
 function shop(){
   goal('game_shop');
   var pct=Math.min(CONFIG.discount.max,Math.floor(st.pts/CONFIG.discount.per));
-  var h='<h3>Баллы LEADMEET: '+fmt(st.pts)+'</h3><p>Баллы даются за уровни, ответы о вашем бизнесе и приглашение друга. Их можно обменять на скидку для реальной услуги: '+CONFIG.discount.per.toLocaleString('ru-RU')+' баллов = 1%, до '+CONFIG.discount.max+'%.</p>';
+  var h='<h3>Баллы LEADMEET: '+fmt(st.pts)+'</h3><p>Баллы даются за уровни и ответы о вашем бизнесе. Их можно обменять на скидку для реальной услуги: '+CONFIG.discount.per.toLocaleString('ru-RU')+' баллов = 1%, до '+CONFIG.discount.max+'%.</p>';
   var q=on('questions')&&nextQ();
   if(q)h+='<button class="btn pri" id="shQ">Ответить на вопрос о бизнесе · +100</button>';
-  h+='<button class="btn" id="shShare">Пригласить друга · +200</button>';
+  if(on('referral'))h+='<button class="btn" id="shShare">Партнёры: бонус за оплаты знакомых</button>';
   h+='<button class="btn" id="shBoost"'+(st.pts<150?' disabled':'')+'>Ускорение ×2 на 2 минуты · 150 баллов</button>';
   if(on('shop')){h+='<p style="margin-top:14px"><b>Скидка '+pct+'%</b> на услугу на выбор:</p>'+CONFIG.services.map(function(s,i){return '<button class="btn" data-sv="'+i+'"'+(pct<1?' disabled':'')+'>'+s+'</button>'}).join('')+'<div class="note">Скидку подтверждает Влад в Telegram. Баллы списываются после подтверждения.</div>'}
   open(h,'shop');
   if($('shQ'))$('shQ').onclick=function(){askCard(q,shop)};
-  $('shShare').onclick=function(){goal('game_share');var u=CONFIG.gameUrl+'?ref=share',t='Построй бизнес с ИИ-командой и дойди до экзита';
-    if(TG&&TG.openTelegramLink)TG.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(u)+'&text='+encodeURIComponent(t));
-    else if(navigator.share)navigator.share({title:'Город сделок',text:t,url:u}).catch(function(){});
-    else window.open('https://t.me/share/url?url='+encodeURIComponent(u)+'&text='+encodeURIComponent(t),'_blank','noopener');
-    if(!st.seen.share){st.seen.share=1;st.pts+=200;save();toast('+200 баллов')}};
+  if($('shShare'))$('shShare').onclick=partner;
   $('shBoost').onclick=function(){if(st.pts<150)return;st.pts-=150;st.boost=Date.now()+120000;save();toast('Ускорение ×2 на 2 минуты');close()};
   body.querySelectorAll('[data-sv]').forEach(function(b){b.onclick=function(){var s=CONFIG.services[+b.getAttribute('data-sv')];st.disc={pct:pct,s:s};save();goal('game_discount',{pct:pct});
     goTG(tgLink('Здравствуйте! Набрал '+fmt(st.pts)+' баллов в «Городе сделок». Хочу применить скидку '+pct+'% на услугу «'+s+'». «Хорошая сделка начинается с честных цифр.» (Влад Лев)'+summary()))}});
@@ -439,7 +458,7 @@ function loop(now){var dt=Math.min(.1,(now-lastT)/1000);lastT=now;
   draw();requestAnimationFrame(loop)}
 /* доход за время отсутствия, не больше двух часов */
 (function(){var away=Math.min(7200,(Date.now()-(st.t||Date.now()))/1000);if(away>60&&lsum()>0){var g=0,steps=Math.ceil(away/5);for(var i=0;i<steps;i++)g+=tick(5);if(g>0)setTimeout(function(){toast('Пока вас не было, команда заработала '+fmt(g)+' ₽')},800)}})();
-resize();cam.z=W<600?1.55:1.1;addEventListener('resize',resize);rebuild();hud();goal('game_open',{tg:TG?1:0,ref:new URLSearchParams(location.search).get('ref')||''});
+resize();cam.z=W<600?1.55:1.1;addEventListener('resize',resize);rebuild();hud();goal('game_open',{tg:TG?1:0,ref:rf.ref?1:0});
 document.addEventListener('visibilitychange',function(){if(document.hidden)save()});
 setTimeout(firstHire,600);
 requestAnimationFrame(loop);
