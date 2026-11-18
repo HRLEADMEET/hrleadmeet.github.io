@@ -6,16 +6,17 @@ AI: ['#2D8CFF', '#1A5FBF', '#164E9E'], H: ['#FFD38A', '#D9A24F', '#B98334'],
 M: ['#22C55E', '#15803D', '#166534'], N: ['#8DBFFF', '#2D7CE0', '#1F62B8'], F: ['#17407F', '#102F5E', '#0C2549']
 };
 var DEPTS = [
-{ id: 'find', bx: 0, by: 1, label: 'Поиск', c: 'AI', h: 62, ly: 0 },
-{ id: 'research', bx: 1, by: 0, label: 'Исследование', c: 'AI', h: 84, ly: 0 },
-{ id: 'message', bx: 2, by: 0, label: 'Сообщение', c: 'AI', h: 60, ly: 0 },
+{ id: 'content', bx: 0, by: 2, label: 'Контент', c: 'AI', h: 66, ly: 0 },
+{ id: 'traffic', bx: 0, by: 1, label: 'Трафик', c: 'AI', h: 84, ly: 0 },
+{ id: 'sales', bx: 1, by: 0, label: 'Продажи', c: 'AI', h: 96, ly: 0 },
+{ id: 'refs', bx: 2, by: 0, label: 'Рефералы', c: 'AI', h: 58, ly: 0 },
 { id: 'meet', bx: 2, by: 1, label: 'Встреча', c: 'H', h: 78, ly: 0 },
-{ id: 'pay', bx: 1, by: 2, label: 'Оплата', c: 'M', h: 90, ly: 0 },
+{ id: 'pay', bx: 1, by: 2, label: 'Финансы', c: 'M', h: 90, ly: 0 },
 { id: 'core', bx: 1, by: 1, label: 'Ваш бизнес', c: 'N', h: 150, ly: 0, core: true, below: true }
 ];
-var FILL = [[0, 0], [2, 2], [0, 2]];
-var ARCS = [['find', 'research'], ['research', 'message'], ['message', 'meet'], ['meet', 'pay'], ['pay', 'core']];
-var LEAD = { find: '#9CC3F5', research: '#5AA9FF', message: '#FFD38A', meet: '#7DE3A8', pay: '#22C55E', core: null };
+var FILL = [[0, 0], [2, 2]];
+var ARCS = [['content', 'traffic'], ['traffic', 'sales'], ['refs', 'sales'], ['sales', 'meet'], ['meet', 'pay'], ['pay', 'core']];
+var LEAD = { content: '#9CC3F5', traffic: '#5AA9FF', sales: '#FFD38A', refs: '#9CC3F5', meet: '#7DE3A8', pay: '#22C55E', core: null };
 var DOOR = {};
 DEPTS.forEach(function (d) { DOOR[d.id] = [d.bx + 1, d.by + 1]; });
 function rng(seed) { var s = seed >>> 0; return function () { s = (s * 1664525 + 1013904223) >>> 0; return s / 4294967296; }; }
@@ -72,7 +73,7 @@ return boxes;
 function makeAgents(n, humans, rnd) {
 var list = [], i;
 function mk(human) {
-var route = human ? ['meet', 'pay', 'core'] : ['core', 'find', 'research', 'message'];
+var route = human ? ['meet', 'pay', 'core'] : (rnd() < .3 ? ['refs', 'sales', 'core'] : ['core', 'content', 'traffic', 'sales']);
 var ri = Math.floor(rnd() * route.length), node = DOOR[route[ri]].slice();
 return { human: human, route: route, ri: ri, node: node, from: node, path: [], t: 0,
 speed: .8 + rnd() * .55, wait: rnd() * 1.4, lane: (rnd() - .5) * .38, lead: LEAD[route[ri]] };
@@ -172,7 +173,7 @@ ctx.fillStyle = COL_TEXT; ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
 ctx.fillText(d.label, p[0], y + ph / 2 + .5);
 }
 var COL_TEXT = '#F2F6FF';
-function core() { return DEPTS[5]; }
+function core() { return DEPTS[6]; }
 function draw(time) {
 ctx.clearRect(0, 0, W, H);
 ctx.globalAlpha = alpha;
@@ -218,7 +219,7 @@ glow.addColorStop(0, 'rgba(255,226,168,1)'); glow.addColorStop(1, 'rgba(255,211,
 ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(top[0], top[1], (16 + pulse * 6) * s, 0, 6.3); ctx.fill();
 DEPTS.forEach(function (d) { label(d, time); });
 if (opts.legend) {
-var fs = Math.max(10, Math.min(12.5, 10.5 * s * 1.3)), lx = 10, ly = H - 12 - fs * 3.3, rows = [['#7FE3FF', 'ИИ-агенты ищут, изучают, пишут'], ['#FFD38A', 'Человек проводит встречу'], ['#22C55E', 'Деньги приходят вам']];
+var fs = Math.max(10, Math.min(12.5, 10.5 * s * 1.3)), lx = 10, ly = H - 12 - fs * 3.3, rows = [['#7FE3FF', 'ИИ-агенты: контент, трафик, продажи'], ['#FFD38A', 'Человек проводит встречу'], ['#22C55E', 'Финансы: оплата и учёт']];
 ctx.font = '600 ' + fs + 'px Manrope, "Helvetica Neue", Arial, sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
 rows.forEach(function (r, i) {
 ctx.beginPath(); ctx.arc(lx + 4, ly + i * fs * 1.45, 3.4, 0, 6.3); ctx.fillStyle = r[0]; ctx.fill();
@@ -244,5 +245,5 @@ if (io) io.observe(canvas); else start();
 document.addEventListener('visibilitychange', function () { document.hidden ? stop() : start(); });
 return { stop: stop, start: start, _agents: function () { return agents; }, _advance: function (sec) { for (var i = 0; i < sec / .05; i++) agents.forEach(function (a) { step(a, .05, rnd); }); draw(performance.now() - t0); } };
 }
-root.LMCity = { mount: mount, version: '1.0' };
+root.LMCity = { mount: mount, version: '1.1' };
 })(typeof window !== 'undefined' ? window : this);
